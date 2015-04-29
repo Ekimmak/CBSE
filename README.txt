@@ -6,6 +6,12 @@ https://help.github.com/articles/set-up-git/
 http://rogerdudler.github.io/git-guide/
 https://guides.github.com/introduction/flow/index.html
 
+
+Deliverables:
+-------------------------------------------------------
+https://github.com/GuyHero/CBSE/wiki
+
+
 -------------------------------------------------------
 Directories:
 
