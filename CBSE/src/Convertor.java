@@ -5,24 +5,27 @@ import java.io.Serializable;
  */
 
 /**
- * @author no_author
+ * @author Taylor
  *
  */
 public class Convertor implements Serializable {
-	// Sample object.
-	private Sample originalSample
+	// Sample objects.
+	private Sample originalSample;
 	private ConvertedSample convertedSample;
 
 	// Get the average noise profile of a sample.
 	public float getNoise() {
+		return 0;
 	}
 
 	// Get the average line level of a sample.
 	public float getLine() {
+		return 0;
 	}
 
 	// Get the average distortion of a sample.
 	public float getDistortion() {
+		return 0;
 	}
  
 	// Default constructor.
