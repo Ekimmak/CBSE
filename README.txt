@@ -1,11 +1,11 @@
 Component Based Software Engineering: Assignment 2
---------------------------------------------------
+
 Information for setting up and using GIT:
 
-http://rogerdudler.github.io/git-guide/
 https://help.github.com/articles/set-up-git/
+http://rogerdudler.github.io/git-guide/
+https://guides.github.com/introduction/flow/index.html
 
----------------------------------------------------
 Directories:
 
 /CBSE: Eclipse workspace directory.
