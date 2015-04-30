@@ -12,6 +12,8 @@ public class Convertor implements Serializable {
 	// Sample objects.
 	private Sample originalSample;
 	private ConvertedSample convertedSample;
+	
+	private SignalConvertor signalConv;
 
 	// Get the average noise profile of a sample.
 	public float getNoise() {
@@ -32,5 +34,9 @@ public class Convertor implements Serializable {
 	public Convertor(Sample newSample) {
 		// Set default attributes.
 		originalSample = newSample;
+		
+		// Get the converted sample.
+		signalConv = new SignalConvertor();
+		//convertedSample = signalConv.getConvertedSample(originalSample);
 	}
 }
