@@ -19,4 +19,5 @@ Directories:
 /CBSE/.settings: Eclipse settings.
 /CBSE/bin: Project source .class files.
 /CBSE/src: Project source .java files.
+/CBSE/samples: WAV sample files.
 /Design: Documents related to the design of the subsystem.
