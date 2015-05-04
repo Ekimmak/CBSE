@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
 * @author Taylor
 *
-*/
+*//*
 public class ConvertedSample extends Sample implements Serializable {
 	private int sampleType;
 	
@@ -13,7 +13,8 @@ public class ConvertedSample extends Sample implements Serializable {
 		return sampleType;
 	}
 	public ConvertedSample(String sampleName, Byte sampleData[], int type) {
-		super(sampleName, sampleData);
+		//super(sampleName, sampleData);
 		sampleType = type;
 	}
 }
+*/

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Convertor implements Serializable {
 	// Sample objects.
 	private Sample originalSample;
-	private ConvertedSample convertedSample;
+	//private ConvertedSample convertedSample;
 	
 	private SignalConvertor signalConv;
 
