@@ -9,11 +9,9 @@ import java.io.Serializable;
  *
  */
 public class Convertor implements Serializable {
-	// Sample objects.
+	private String sampleFileName;
 	private Sample originalSample;
-	//private ConvertedSample convertedSample;
-	
-	private SignalConvertor signalConv;
+	private SampleReader sampleReader;
 
 	// Get the average noise profile of a sample.
 	public float getNoise() {
@@ -29,14 +27,19 @@ public class Convertor implements Serializable {
 	public float getDistortion() {
 		return 0;
 	}
+
+	// Get the sample data and attributes.
+	public Sample getSample() {
+		return originalSample;
+	}
  
 	// Default constructor.
-	public Convertor(Sample newSample) {
+	public Convertor(String sampleFileName) {
 		// Set default attributes.
-		originalSample = newSample;
-		
-		// Get the converted sample.
-		signalConv = new SignalConvertor();
-		//convertedSample = signalConv.getConvertedSample(originalSample);
+		this.sampleFileName = sampleFileName;
+		sampleReader = new SampleReader();
+
+		// Load in sample data.
+		originalSample = sampleReader.readFromFile(this.sampleFileName);
 	}
 }

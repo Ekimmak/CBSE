@@ -9,5 +9,9 @@ import java.io.Serializable;
  *
  */
 public class NoiseFunction implements Serializable {
+	private Sample originalSample;
 
+	public NoiseFunction(Sample originalSample) {
+		this.originalSample = originalSample;
+	}
 }

@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.PrintWriter;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -20,26 +21,26 @@ public class componentTest {
 	public static void main(String[] args) {
 		// Get audio stream file.
 		String fileName = "samples/1A5.wav";
-		WaveFile waveFile = new WaveFile();
-		waveFile.ReadInWAV(fileName);
+		System.out.println("Loading..." + fileName);
+		// Get sample information.
+		Convertor sampleConvertor = new Convertor(fileName);
+		Sample waveSample = sampleConvertor.getSample();
 		
-		/*
-		try {
-			// Select audio stream from file system and read in information.
-			AudioInputStream inputStream = AudioSystem.getAudioInputStream(audioFile);
-			System.out.println("Opened audio stream " + inputStream.getFormat());
-			// Store .WAV information.
-			/* AudioInputStream seems to be unsuitable for getting WAV data as it searches for readable chunks.
-			/* May need to use an alternate scanner to skip a certain amount of bytes to the WAV data so it
-			/* can be read into a byte array.
-			 
+		System.out.println("Loading completed" + waveSample.getAvgBytesPerSec());
+		try {/*
+			// Print data out for testing purposes. 
+			PrintWriter writer = new PrintWriter("the-file-name.txt", "UTF-8");
+			System.out.println(waveSample.getAvgBytesPerSec());
+				/*
+			for(int i = 0; i < 44100; i+=2) {
+				writer.println(j + ", " + byteBuffer.getShort());
+				j+=0.01;
+			} 
+
+			writer.close(); */
 			
-		
 		} catch(Exception e) {
 			System.out.println("Unable to open audio stream.");
-		} */
+		} 
 	}
-	
-	
-
 }
