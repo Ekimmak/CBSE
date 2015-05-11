@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import javax.sound.sampled.AudioFormat;
 
 /**
 *
@@ -10,6 +9,13 @@ import javax.sound.sampled.AudioFormat;
 */
 public class Sample implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String fileName;
+	
 	// Format information.
 	private short formatTag;
 	private short channels;
@@ -26,9 +32,13 @@ public class Sample implements Serializable {
 	private int sampleLength;
 
 	// Sample data.
-	private byte[] sampleData;
+	private float[] sampleData;
 	
 	// Getter methods.
+	public String getFileName() {
+		return fileName;
+	}
+	
 	public short getFormatTag() {
 		return formatTag;
 	}
@@ -73,11 +83,15 @@ public class Sample implements Serializable {
 		return sampleLength;
 	}
 
-	public byte[] getSampleData() {
+	public float[] getSampleData() {
 		return sampleData;
 	}
 
 	// Setter methods.
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
 	public void setFormatTag(short formatTag ) {
 		this.formatTag = formatTag ;
 	}
@@ -122,12 +136,13 @@ public class Sample implements Serializable {
 		this.sampleLength = sampleLength;
 	}
 
-	public void setSampleData(byte[] sampleData) {
+	public void setSampleData(float[] sampleData) {
 		this.sampleData = sampleData;
 	}
 
 	// Constructors.
-	public Sample() {
+	public Sample(String fileName) {
+		this.fileName = fileName;
 		formatTag = 0;
 		channels = 0;
 		samplesPerSec = 0;

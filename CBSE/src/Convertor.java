@@ -9,7 +9,11 @@ import java.io.Serializable;
  *
  */
 public class Convertor implements Serializable {
-	private String sampleFileName;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private Sample originalSample;
 	private SampleReader sampleReader;
 
@@ -27,19 +31,89 @@ public class Convertor implements Serializable {
 	public float getDistortion() {
 		return 0;
 	}
+	
+	// Get the Dynamic Range of the sample.
+	public float getDNR() {
+		float[] data = originalSample.getSampleData();
+		
+		float min = data[0];
+		float max = data[0];
+		float val = data[0];
+		
+		for(int i = 1; i < data.length; i++)
+		{
+			val = data[i];
+			
+			if(val > max)
+				max = val;
+			else if(val < min)
+				min = val;
+		}
+		
+		return (max/min);
+	}
+	
+	// Get the peak amplitude.
+	public float getPeakAmp() {
+		float[] data = originalSample.getSampleData();
+		
+		float peak = data[0];
+		float val = data[0];
+		
+		for(int i = 1; i < data.length; i++)
+		{
+			val = data[i];
+			
+			if(val > peak)
+				peak = val;
+		}
+		
+		return peak;
+	}
 
+	// Get the minimum amplitude.
+	public float getMinAmp() {
+		float[] data = originalSample.getSampleData();
+		
+		float min = data[0];
+		float val = data[0];
+		
+		for(int i = 1; i < data.length; i++)
+		{
+			val = data[i];
+			
+			if(val < min)
+				min = val;
+		}
+		
+		return min;
+	}
+	
+	// Set the sample data and attributes.
+	public void setSample(Sample sample) {
+		originalSample = sample;
+	}
+	
 	// Get the sample data and attributes.
 	public Sample getSample() {
 		return originalSample;
 	}
+	
+	// Read in sample data.
+	public Sample readInSample() {
+		originalSample = sampleReader.readFromFile(originalSample.getFileName());
+		return originalSample;
+
+	}
+	
+	// Read out sample data.
+	public void readOutSample() {
+		sampleReader.readOutToFile(originalSample);
+	}
  
 	// Default constructor.
-	public Convertor(String sampleFileName) {
+	public Convertor() {
 		// Set default attributes.
-		this.sampleFileName = sampleFileName;
 		sampleReader = new SampleReader();
-
-		// Load in sample data.
-		originalSample = sampleReader.readFromFile(this.sampleFileName);
 	}
 }

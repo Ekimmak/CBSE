@@ -1,6 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.PrintWriter;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,8 +15,16 @@ import java.nio.ByteOrder;
  */
 
 public class SampleReader implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
 	public Sample readFromFile(String file) {
-				Sample waveFile = new Sample();
+				Sample waveFile = new Sample(file);
 
 				try {
 				// Create a new input stream for scanning the WAV file.
@@ -24,7 +32,6 @@ public class SampleReader implements Serializable {
 				  
 				// Used to traverse through the WAV to get chunk information.
 				byte[] byteChunkID;
-				int chunkID = 0;
 				
 				byte[] byteChunkSize = new byte[4];
 				int chunkSize = 0;
@@ -184,8 +191,43 @@ public class SampleReader implements Serializable {
 					{
 						// Start reading in sample data [Note: sample data may be ordered big endian].
 						byte[] byteSampleData = new byte[chunkSize];
-						wavStream.read(byteSampleData );
-						waveFile.setSampleData(byteSampleData);
+						wavStream.read(byteSampleData);
+						
+						byteBuffer = ByteBuffer.wrap(byteSampleData);
+						byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+						
+						// Sample data.
+						float[] floatSampleData;
+						
+						// 8 bit sample.
+						if(waveFile.getBitsPerSample() == 8)
+						{
+							floatSampleData = new float[chunkSize];
+							for(int i = 0; i < floatSampleData.length; i++) {
+								floatSampleData[i] = byteBuffer.get();
+							}
+							waveFile.setSampleData(floatSampleData);
+						}
+						
+						// 16 bit sample.
+						else if((waveFile.getBitsPerSample() == 16))
+						{
+							floatSampleData = new float[chunkSize/2];
+							for(int i = 0; i < floatSampleData.length; i++) {
+								floatSampleData[i] = byteBuffer.getShort();
+							}
+							waveFile.setSampleData(floatSampleData);
+						}
+						
+						// 32 bit sample.
+						else if((waveFile.getBitsPerSample() == 32))
+						{
+							floatSampleData = new float[chunkSize/4];
+
+							for(int i = 0; i < floatSampleData.length; i++) {
+								floatSampleData[i] = byteBuffer.getFloat();
+							}
+						}
 
 						loopChunks = false;
 					}
@@ -197,24 +239,137 @@ public class SampleReader implements Serializable {
 
 				// Close the input stream.
 				wavStream.close();
-				
-				// Print data out for testing purposes. 
-				PrintWriter writer = new PrintWriter("the-file-name.txt", "UTF-8");
-					byteBuffer = ByteBuffer.wrap(waveFile.getSampleData());
-					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-					float j = 0;
-					
-				for(int i = 0; i < 44100; i+=2) {
-					writer.println(j + ", " + byteBuffer.getShort());
-					j+=0.01;
-				} 
-
-				writer.close(); 
 			}
 			catch(Exception e) {	
-				// Catch any exceptions [TBD].
+				return null;
 			}
 		
 		return waveFile;
+	}
+	
+	/**
+	 * 
+	 */
+	public int readOutToFile(Sample sample) {
+		try {
+			FileOutputStream outputStream = new FileOutputStream(sample.getFileName());
+			
+			// Create byte buffer to read in bytes. WAV is little endian by default.
+			ByteBuffer byteBuffer;
+			
+			// Build the RIFF chunk,
+			byte[] riffID = new byte[] {'R', 'I', 'F', 'F'};
+			byte[] riffSize = new byte[4];
+			byte[] waveID = new byte[] {'W', 'A', 'V', 'E'};
+			
+			// Build the fmt chunk.
+			byte[] fmtID = new byte[] {'f', 'm', 't', ' '};
+			byte[] fmtSize = new byte[4];
+			byte[] fmtTag = new byte[2];
+			byte[] fmtChannels = new byte[2];
+			byte[] fmtSamplesPerSec = new byte[4];
+			byte[] fmtAvgBytesPerSec = new byte[4];
+			byte[] fmtBlockAlign = new byte[2];
+			byte[] fmtBitsPerSample = new byte[2];
+			
+			// Build the data chunk.
+			byte[] dataID = new byte[] {'d', 'a', 't', 'a'};
+			byte[] dataSize = new byte[4];
+			
+			// PCM data.
+			if(sample.getFormatTag() == 1)
+			{
+				if(sample.getBitsPerSample() == 16) {
+					byte[] dataArray;
+					
+					float[] sampleData = sample.getSampleData();
+					dataArray = new byte[sampleData.length*2];
+					byteBuffer = ByteBuffer.wrap(dataArray);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					
+					for(int i = 0; i < sampleData.length; i++) {
+						byteBuffer.putShort((short)sampleData[i]);
+					}
+					
+					byteBuffer = ByteBuffer.wrap(riffID);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(riffSize);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putInt((36+(dataArray.length)));
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(waveID);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtID);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtSize);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putInt(16);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtTag);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putShort((short)1);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtChannels);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putShort((short) sample.getChannels());
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtSamplesPerSec);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putInt(sample.getSamplesPerSec());
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtAvgBytesPerSec);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putInt(sample.getAvgBytesPerSec());
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtBlockAlign);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putShort((short) sample.getSamplesPerSec());
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(fmtBitsPerSample);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putShort((short) sample.getBitsPerSample());
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(dataID);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(dataSize);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					byteBuffer.putInt(dataArray.length);
+					outputStream.write(byteBuffer.array());
+					
+					byteBuffer = ByteBuffer.wrap(dataArray);
+					byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+					outputStream.write(dataArray);
+				}
+			}
+			
+			else {
+				outputStream.close();
+				return 1;
+			}
+			
+			outputStream.close();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			return 1;
+		}
+		
+		return 0;
 	}
 }

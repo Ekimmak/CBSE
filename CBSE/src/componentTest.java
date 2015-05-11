@@ -1,8 +1,4 @@
-import java.io.File;
-import java.io.PrintWriter;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 
 /**
  * 
@@ -19,28 +15,32 @@ public class componentTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// Get audio stream file.
-		String fileName = "samples/1A5.wav";
-		System.out.println("Loading..." + fileName);
-		// Get sample information.
-		Convertor sampleConvertor = new Convertor(fileName);
-		Sample waveSample = sampleConvertor.getSample();
+		// Get convertor.
+		Convertor sampleConvertor = new Convertor();
 		
-		System.out.println("Loading completed" + waveSample.getAvgBytesPerSec());
-		try {/*
-			// Print data out for testing purposes. 
-			PrintWriter writer = new PrintWriter("the-file-name.txt", "UTF-8");
-			System.out.println(waveSample.getAvgBytesPerSec());
-				/*
-			for(int i = 0; i < 44100; i+=2) {
-				writer.println(j + ", " + byteBuffer.getShort());
-				j+=0.01;
-			} 
+		// Get sample information.
+		Sample waveSample1 = new Sample("samples/1A220.wav");
+		Sample waveSample2 = new Sample("samples/2A220.wav");
+		Sample waveSample3 = new Sample("samples/3A220.wav");
+		
+		// Print sample information.
+		sampleConvertor.setSample(waveSample1);
+		waveSample1 = sampleConvertor.readInSample();
+		System.out.println("DNR: " + sampleConvertor.getDNR() +" | Peak: " + sampleConvertor.getPeakAmp() + " | Min: " + sampleConvertor.getMinAmp());
+		
+		sampleConvertor.setSample(waveSample2);
+		waveSample2 = sampleConvertor.readInSample();
+		System.out.println("DNR: " + sampleConvertor.getDNR() +" | Peak: " + sampleConvertor.getPeakAmp() + " | Min: " + sampleConvertor.getMinAmp());
+		
+		sampleConvertor.setSample(waveSample3);
+		waveSample3 = sampleConvertor.readInSample();
+		System.out.println("DNR: " + sampleConvertor.getDNR() +" | Peak: " + sampleConvertor.getPeakAmp() + " | Min: " + sampleConvertor.getMinAmp());
 
-			writer.close(); */
-			
-		} catch(Exception e) {
-			System.out.println("Unable to open audio stream.");
-		} 
+		// Fill a sample with noise and save it to another file.
+		NoiseFunction noiseFunction = new NoiseFunction();
+		waveSample3.setFileName("NoiseTest.wav");
+		noiseFunction.AddNoise(waveSample3, 0.30f, 0f);
+		sampleConvertor.setSample(waveSample3);
+		sampleConvertor.readOutSample();
 	}
 }
